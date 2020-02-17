@@ -1,16 +1,18 @@
-FROM golang:latest as builder
+ARG GOLANG=1.13.8-buster
+FROM golang:${GOLANG} as builder
 
 RUN apt-get update && apt-get dist-upgrade -qy
 
-ENV GOOS=linux GOARCH=arm64
-
+# ARG GOARCH=amd64
+ENV GOOS=linux CGO_ENABLED=0
 RUN go get -u -v google.golang.org/grpc && \
     git clone https://www.github.com/dgraph-io/dgraph/ && \
     cd dgraph && \
-    make install && \
-    mkdir -p /dist/bin && \
-    mkdir -p /dist/tmp  && \
-    mv ${GOPATH}/bin/**/dgraph /dist/bin/dgraph
+    make install
+
+RUN mkdir -p /dist/bin && \
+    mkdir -p /dist/tmp && \
+    mv ${GOPATH}/bin/dgraph /dist/bin/dgraph
 
 FROM scratch as dgraph
 COPY --from=builder /dist /
@@ -21,3 +23,4 @@ ENV PATH=$PATH:/bin/
 #            alpha |          7080 |          9080 |          8080
 #            ratel |             - |             - |          8000
 EXPOSE 5080 6080 7080 8080 8000 9080
+CMD ["/bin/dgraph", "--version"]
