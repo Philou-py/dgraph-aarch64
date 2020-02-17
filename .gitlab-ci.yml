@@ -1,0 +1,22 @@
+image: docker:stable
+
+stages:
+  - build
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+  IMAGE: dgraph
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+
+build-docker:
+  stage: build
+  script:
+    - docker pull ${IMAGE}:latest || true
+    - docker build . --tag ${IMAGE}:${CI_COMMIT_SHA} --cache-from ${IMAGE}:latest
+    - docker push $2:${CI_COMMIT_SHA}
