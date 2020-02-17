@@ -1,3 +1,5 @@
+![](./dgraph.svg)
+
 # Dgraph builder
 
 A repository that builds a custom (cross-platform) distribution of Dgraph.
