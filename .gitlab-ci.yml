@@ -11,7 +11,7 @@ variables:
   BUILDX_URL: https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64
   BUILDX_BUILDER: ratio
   BUILDX_PLATFORM: linux/aarch64
-  IMAGE: registry.gitlab.com/ratio-case/docker/dgraph
+  IMAGE: registry.gitlab.com/dgraph-aarch64
 
 build-docker:
   stage: build
