@@ -23,4 +23,4 @@ RUN chmod +x /bin/dgraph
 #            alpha |          7080 |          9080 |          8080
 #            ratel |             - |             - |          8000
 EXPOSE 5080 6080 7080 8080 8000 9080
-CMD ["/bin/dgraph", "--version"]
+CMD ["/bin/dgraph", "version"]
