@@ -13,9 +13,10 @@ RUN mkdir -p /dist/bin && \
     mkdir -p /dist/tmp && \
     mv ${GOPATH}/bin/dgraph /dist/bin/dgraph
 
-FROM scratch as dgraph
+FROM alpine:latest as dgraph
 COPY --from=builder /dist /
 ENV PATH=$PATH:/bin/
+RUN chmod +x /bin/dgraph
 
 # Dgraph node type | gRPC-internal | gRPC-external | HTTP-external
 #             zero |          5080 |             - |          6080
