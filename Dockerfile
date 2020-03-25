@@ -3,7 +3,7 @@ FROM golang:${GOLANG} as builder
 
 RUN apt-get update && apt-get dist-upgrade -qy
 
-ENV GOOS=linux GOARCH=arm64
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=arm64
 RUN go get -u -v google.golang.org/grpc && \
     git clone https://www.github.com/dgraph-io/dgraph/ && \
     cd dgraph && \
