@@ -1,7 +1,7 @@
 ARG GOLANG=1.13.8-buster
 FROM golang:${GOLANG} as builder
 
-RUN apt-get update && apt-get install -qy build-essential software-properties-common
+RUN apt-get update && apt-get install -qy build-essential software-properties-common libjemalloc2 shadow
 
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=arm64
 RUN go get -u -v google.golang.org/grpc && \
