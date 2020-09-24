@@ -1,6 +1,8 @@
 ARG GOLANG=1.13.8-buster
 FROM golang:${GOLANG} as builder
 
+RUN apt-get update && apt-get install -qy build-essential software-properties-common
+
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=arm64
 RUN go get -u -v google.golang.org/grpc && \
     git clone https://www.github.com/dgraph-io/dgraph/ && \
