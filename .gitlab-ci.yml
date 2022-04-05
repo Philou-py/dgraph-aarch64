@@ -1,35 +1,29 @@
-image: docker:19.03.6
+image: registry.gitlab.com/Tiemen/dgraph-aarch/docker-buildx:latest
+
+variables:
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_DRIVER: "overlay2"
+  REPO: "registry.gitlab.com/Tiemen/dgraph-aarch64"
+  EXPAND_FROM: "1"
+  DEPLOY: "1"
+  TARGET: "dgraph"
+  TAG: ${CI_JOB_ID}
+  ARGS: "--no-cache"
+  PLATFORM: "linux/arm64"
+
+services:
+  - docker:dind
 
 stages:
   - build
+  - deploy
 
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_DRIVER: overlay2
-  DOCKER_BUILDKIT: 1
-  DOCKER_CLI_EXPERIMENTAL: enabled
-  BUILDX_URL: https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64
-  BUILDX_BUILDER: ratio
-  BUILDX_PLATFORM: linux/aarch64
-  IMAGE: registry.gitlab.com/tiemen/dgraph-aarch64
+before_script:
+  - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  - docker buildx create --use --name mybuilder
+  - chmod +x *.sh
 
-build-docker:
+build:docker:
   stage: build
-  services:
-    - name: docker:19.03.6-dind
-      command: ["--experimental"]
-  before_script:
-    - mkdir -p $HOME/.docker/cli-plugins/
-    - wget -O $HOME/.docker/cli-plugins/docker-buildx $BUILDX_URL
-    - chmod a+x $HOME/.docker/cli-plugins/docker-buildx
-    - "echo -e '{\n  \"experimental\": \"enabled\"\n}' | tee $HOME/.docker/config.json"
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --use --driver docker-container --name ${BUILDX_BUILDER} --platform=${BUILDX_PLATFORM}
-    - docker buildx inspect --bootstrap ${BUILDX_BUILDER}
-    - docker buildx ls
-    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
   script:
-    - docker buildx build --platform=${BUILDX_PLATFORM} -t ${IMAGE}:${CI_COMMIT_SHA} --push "."
-    - docker run --rm ${IMAGE}:${CI_COMMIT_SHA} dgraph version
-    - docker tag ${IMAGE}:${CI_COMMIT_SHA} ${IMAGE}:latest
-    - docker push ${IMAGE}:latest
+    - . ./build.sh
