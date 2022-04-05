@@ -1,10 +1,9 @@
-image: registry.gitlab.com/Tiemen/dgraph-aarch/docker-buildx:latest
+image: registry.gitlab.com/ratio-case/docker/docker-buildx:latest
 
 variables:
   DOCKER_HOST: "tcp://docker:2375"
   DOCKER_DRIVER: "overlay2"
-  REPO: "registry.gitlab.com/Tiemen/dgraph-aarch64"
-  EXPAND_FROM: "1"
+  REPO: "${CI_REGISTRY}"
   DEPLOY: "1"
   TARGET: "dgraph"
   TAG: ${CI_JOB_ID}
@@ -16,7 +15,6 @@ services:
 
 stages:
   - build
-  - deploy
 
 before_script:
   - echo ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
