@@ -16,8 +16,7 @@ RUN mkdir -p /dist/bin && \
 FROM node:18-alpine as dgraph
 COPY --from=builder /dist /
 ENV PATH=$PATH:/bin/
-RUN chmod +x /bin/dgraph
-#  && apk --update --no-cache add bash
+RUN chmod +x /bin/dgraph && apk --update --no-cache add bash
 
 # Dgraph node type | gRPC-internal | gRPC-external | HTTP-external
 #             zero |          5080 |             - |          6080
